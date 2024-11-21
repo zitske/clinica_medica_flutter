@@ -1,6 +1,6 @@
 # Clinica Médica
 
-A new Flutter project.
+Trabalho da disciplina de Ciência de Dados.
 
 ## BackEnd
 
