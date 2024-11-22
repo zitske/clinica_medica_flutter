@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:clinica_medica_flutter/screens/dashboard.dart'; // Importação da tela DashboardScreen
 
 class LoginScreen extends StatelessWidget {
   @override
@@ -79,7 +80,12 @@ class LoginScreen extends StatelessWidget {
                       height: 45.0, // Altura igual à dos TextFields
                       child: ElevatedButton(
                         onPressed: () {
-                          // Handle login logic here
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    DashboardScreen()), // Navegação para DashboardScreen
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green, // Cor verde
