@@ -10,6 +10,7 @@ class RegistroScreen extends StatefulWidget {
 class _RegistroScreenState extends State<RegistroScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _cnpjController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -86,6 +87,24 @@ class _RegistroScreenState extends State<RegistroScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Por favor, insira seu nome';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16.0),
+                      TextFormField(
+                        controller: _cnpjController,
+                        decoration: InputDecoration(
+                          labelText: 'CNPJ',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor, insira seu CNPJ';
                           }
                           return null;
                         },
