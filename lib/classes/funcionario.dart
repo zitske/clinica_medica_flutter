@@ -32,9 +32,9 @@ class Funcionario {
     required this.id,
     required this.cpf,
     required this.nome,
-    required this.idConsultorio,
   })  : tipo = 'Secretario',
         coren = null,
         especialidade = null,
-        crm = null;
+        crm = null,
+        idConsultorio = null;
 }
