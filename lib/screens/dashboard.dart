@@ -24,7 +24,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
         idSecretaria: 2),
   ];
 
-  final List<Funcionario> funcionarios = [];
+  final List<Funcionario> funcionarios = [
+    Funcionario.enfermeiro(
+      id: 1,
+      cpf: '111.222.333-44',
+      nome: 'Carlos Pereira',
+      coren: 'COREN12345',
+    ),
+    Funcionario.medico(
+      id: 2,
+      cpf: '555.666.777-88',
+      nome: 'Ana Martins',
+      especialidade: 'Cardiologia',
+      crm: 'CRM67890',
+    ),
+    Funcionario.secretario(
+      id: 3,
+      cpf: '999.000.111-22',
+      nome: 'Fernanda Lima',
+    ),
+  ];
 
   void _showPacienteDialog(BuildContext context, {Paciente? paciente}) {
     final nomeController = TextEditingController(text: paciente?.nome ?? '');
