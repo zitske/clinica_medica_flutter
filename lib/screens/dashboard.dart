@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:math';
 import '../classes/paciente.dart';
 import '../classes/funcionario.dart';
+import '../classes/consulta.dart';
+import '../classes/receita.dart';
+import '../classes/quarto.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -44,6 +48,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
       nome: 'Fernanda Lima',
     ),
   ];
+
+  final List<Consulta> consultas = [
+    Consulta(
+      idPaciente: 1,
+      idMedico: 2,
+      data: DateTime.parse('2023-10-01'),
+    ),
+    Consulta(
+      idPaciente: 2,
+      idMedico: 2,
+      data: DateTime.parse('2023-10-02'),
+    ),
+  ];
+  final List<Receita> receitas = [];
+  final List<Quarto> quartos = [];
 
   void _showPacienteDialog(BuildContext context, {Paciente? paciente}) {
     final nomeController = TextEditingController(text: paciente?.nome ?? '');
@@ -179,6 +198,230 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  void _showConsultaDialog(BuildContext context, {Consulta? consulta}) {
+    int? selectedPacienteId = consulta?.idPaciente;
+    int? selectedMedicoId = consulta?.idMedico;
+    final dataController =
+        TextEditingController(text: consulta?.data.toString() ?? '');
+    final medicamentoController = TextEditingController();
+
+    Future<void> _selectDateTime(BuildContext context) async {
+      final DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: consulta?.data ?? DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2101),
+      );
+      if (pickedDate != null) {
+        final TimeOfDay? pickedTime = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.fromDateTime(consulta?.data ?? DateTime.now()),
+        );
+        if (pickedTime != null) {
+          final DateTime pickedDateTime = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+          setState(() {
+            dataController.text = pickedDateTime.toIso8601String();
+          });
+        }
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(consulta == null
+                  ? 'Cadastrar Nova Consulta'
+                  : 'Editar Consulta'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButton<int>(
+                    value: selectedPacienteId,
+                    onChanged: (int? newValue) {
+                      setState(() {
+                        selectedPacienteId = newValue;
+                      });
+                    },
+                    items: pacientes
+                        .map<DropdownMenuItem<int>>((Paciente paciente) {
+                      return DropdownMenuItem<int>(
+                        value: paciente.id,
+                        child: Text(paciente.nome),
+                      );
+                    }).toList(),
+                    hint: Text('Selecione o Paciente'),
+                  ),
+                  DropdownButton<int>(
+                    value: selectedMedicoId,
+                    onChanged: (int? newValue) {
+                      setState(() {
+                        selectedMedicoId = newValue;
+                      });
+                    },
+                    items: funcionarios
+                        .where((funcionario) => funcionario.tipo == 'Medico')
+                        .map<DropdownMenuItem<int>>((Funcionario medico) {
+                      return DropdownMenuItem<int>(
+                        value: medico.id,
+                        child: Text(medico.nome),
+                      );
+                    }).toList(),
+                    hint: Text('Selecione o Médico'),
+                  ),
+                  TextField(
+                    controller: dataController,
+                    decoration: InputDecoration(
+                      labelText: 'Data e Hora',
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.calendar_today),
+                        onPressed: () {
+                          _selectDateTime(context);
+                        },
+                      ),
+                    ),
+                  ),
+                  TextField(
+                    controller: medicamentoController,
+                    decoration: InputDecoration(labelText: 'Medicamento'),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    // Lógica para salvar ou editar consulta e receita
+                    if (consulta == null) {
+                      final novaConsulta = Consulta(
+                        idPaciente: selectedPacienteId!,
+                        idMedico: selectedMedicoId!,
+                        data: DateTime.parse(dataController.text),
+                      );
+                      setState(() {
+                        consultas.add(novaConsulta);
+                        receitas.add(Receita(
+                          medicamento: medicamentoController.text,
+                          consultaId: novaConsulta.idPaciente,
+                        ));
+                      });
+                    } else {
+                      // Atualizar consulta existente
+                    }
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(consulta == null ? 'Cadastrar' : 'Salvar'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showQuartoDialog(BuildContext context, {Quarto? quarto}) {
+    final numeroController =
+        TextEditingController(text: quarto?.numero.toString() ?? '');
+    final idController = TextEditingController(text: quarto?.id ?? '');
+    final idConsultorioController =
+        TextEditingController(text: quarto?.idConsultorio ?? '');
+    final lotacaoController =
+        TextEditingController(text: quarto?.lotacao.toString() ?? '0');
+    String? enfermeiraResponsavel = quarto?.enfermeiraResponsavel;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(
+                  quarto == null ? 'Cadastrar Novo Quarto' : 'Editar Quarto'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: numeroController,
+                    decoration: InputDecoration(labelText: 'Número'),
+                    keyboardType: TextInputType.number,
+                  ),
+                  TextField(
+                    controller: idConsultorioController,
+                    decoration: InputDecoration(labelText: 'ID Consultório'),
+                    enabled: false,
+                  ),
+                  DropdownButton<String>(
+                    value: enfermeiraResponsavel,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        enfermeiraResponsavel = newValue;
+                      });
+                    },
+                    items: funcionarios
+                        .where(
+                            (funcionario) => funcionario.tipo == 'Enfermeiro')
+                        .map<DropdownMenuItem<String>>(
+                            (Funcionario enfermeiro) {
+                      return DropdownMenuItem<String>(
+                        value: enfermeiro.nome,
+                        child: Text(enfermeiro.nome),
+                      );
+                    }).toList(),
+                    hint: Text('Selecione a Enfermeira Responsável'),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    // Lógica para salvar ou editar quarto
+                    setState(() {
+                      if (quarto == null) {
+                        quartos.add(Quarto(
+                          numero: int.parse(numeroController.text),
+                          id: Random().nextInt(100000).toString(),
+                          idConsultorio:
+                              'ID_DO_CONSULTORIO', // Defina o ID do consultório aqui
+                          lotacao: 0,
+                          enfermeiraResponsavel: enfermeiraResponsavel!,
+                        ));
+                      } else {
+                        quarto.numero = int.parse(numeroController.text);
+                        quarto.enfermeiraResponsavel = enfermeiraResponsavel!;
+                      }
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(quarto == null ? 'Cadastrar' : 'Salvar'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   void _deletePaciente(int index) {
     setState(() {
       pacientes.removeAt(index);
@@ -188,6 +431,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _deleteFuncionario(int index) {
     setState(() {
       funcionarios.removeAt(index);
+    });
+  }
+
+  void _deleteConsulta(int index) {
+    setState(() {
+      consultas.removeAt(index);
+    });
+  }
+
+  void _deleteQuarto(int index) {
+    setState(() {
+      quartos.removeAt(index);
     });
   }
 
@@ -348,6 +603,153 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       onPressed: () {
                                         _deleteFuncionario(
                                             funcionarios.indexOf(funcionario));
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Card(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                elevation: 5,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Consultas',
+                            style: GoogleFonts.anekOdia(
+                                fontSize: 24.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.add),
+                            onPressed: () {
+                              _showConsultaDialog(context);
+                            },
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: consultas.map((consulta) {
+                          final paciente = pacientes
+                              .firstWhere((p) => p.id == consulta.idPaciente);
+                          final medico = funcionarios
+                              .firstWhere((f) => f.id == consulta.idMedico);
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            elevation: 5,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                title: Text(
+                                    'Consulta de ${paciente.nome} com Dr(a). ${medico.nome}'),
+                                subtitle: Text('Data: ${consulta.data}'),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {
+                                        _showConsultaDialog(context,
+                                            consulta: consulta);
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () {
+                                        _deleteConsulta(
+                                            consultas.indexOf(consulta));
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Card(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                elevation: 5,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Quartos',
+                            style: GoogleFonts.anekOdia(
+                                fontSize: 24.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.add),
+                            onPressed: () {
+                              _showQuartoDialog(context);
+                            },
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: quartos.map((quarto) {
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            elevation: 5,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                title: Text('Quarto ${quarto.numero}'),
+                                subtitle: Text(
+                                    'ID: ${quarto.id}\nID Consultório: ${quarto.idConsultorio}\nLotação: ${quarto.lotacao}\nEnfermeira Responsável: ${quarto.enfermeiraResponsavel}'),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {
+                                        _showQuartoDialog(context,
+                                            quarto: quarto);
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () {
+                                        _deleteQuarto(quartos.indexOf(quarto));
                                       },
                                     ),
                                   ],
