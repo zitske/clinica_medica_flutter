@@ -207,103 +207,162 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: Color(0xFFafffe7),
         automaticallyImplyLeading: false,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Bem-vindo ao Dashboard!',
-              style: TextStyle(fontSize: 24),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Navegar para outra tela
-              },
-              child: Text('Ir para outra tela'),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                _showPacienteDialog(context);
-              },
-              child: Text('Cadastrar Novo Paciente'),
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                itemCount: pacientes.length,
-                itemBuilder: (context, index) {
-                  final paciente = pacientes[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(paciente.nome),
-                      subtitle: Text(
-                          'CPF: ${paciente.cpf}\nRestrições: ${paciente.restricoes}'),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: GridView.count(
+            crossAxisCount: MediaQuery.of(context).size.width > 600 ? 2 : 1,
+            crossAxisSpacing: 16.0,
+            mainAxisSpacing: 16.0,
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            children: <Widget>[
+              Card(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                elevation: 5,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () {
-                              _showPacienteDialog(context, paciente: paciente);
-                            },
+                          Text(
+                            'Pacientes',
+                            style: GoogleFonts.anekOdia(
+                                fontSize: 24.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete),
+                            icon: Icon(Icons.add),
                             onPressed: () {
-                              _deletePaciente(index);
+                              _showPacienteDialog(context);
                             },
                           ),
                         ],
                       ),
-                    ),
-                  );
-                },
+                      Column(
+                        children: pacientes.map((paciente) {
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            elevation: 5,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                title: Text(paciente.nome),
+                                subtitle: Text(
+                                    'CPF: ${paciente.cpf}\nRestrições: ${paciente.restricoes}'),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {
+                                        _showPacienteDialog(context,
+                                            paciente: paciente);
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () {
+                                        _deletePaciente(
+                                            pacientes.indexOf(paciente));
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                _showFuncionarioDialog(context);
-              },
-              child: Text('Cadastrar Novo Funcionário'),
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                itemCount: funcionarios.length,
-                itemBuilder: (context, index) {
-                  final funcionario = funcionarios[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(funcionario.nome),
-                      subtitle: Text(
-                          'CPF: ${funcionario.cpf}\nTipo: ${funcionario.tipo}\nCOREN: ${funcionario.coren}\nEspecialidade: ${funcionario.especialidade}\nCRM: ${funcionario.crm}\nID Consultório: ${funcionario.idConsultorio}'),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
+              Card(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                elevation: 5,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () {
-                              _showFuncionarioDialog(context,
-                                  funcionario: funcionario);
-                            },
+                          Text(
+                            'Funcionários',
+                            style: GoogleFonts.anekOdia(
+                                fontSize: 24.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete),
+                            icon: Icon(Icons.add),
                             onPressed: () {
-                              _deleteFuncionario(index);
+                              _showFuncionarioDialog(context);
                             },
                           ),
                         ],
                       ),
-                    ),
-                  );
-                },
+                      Column(
+                        children: funcionarios.map((funcionario) {
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            elevation: 5,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                title: Text(funcionario.nome),
+                                subtitle: Text(
+                                    'CPF: ${funcionario.cpf}\nTipo: ${funcionario.tipo}\nCOREN: ${funcionario.coren}\nEspecialidade: ${funcionario.especialidade}\nCRM: ${funcionario.crm}\nID Consultório: ${funcionario.idConsultorio}'),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {
+                                        _showFuncionarioDialog(context,
+                                            funcionario: funcionario);
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () {
+                                        _deleteFuncionario(
+                                            funcionarios.indexOf(funcionario));
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
