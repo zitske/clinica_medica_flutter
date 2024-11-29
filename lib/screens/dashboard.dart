@@ -62,13 +62,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ),
   ];
   final List<Receita> receitas = [];
-  final List<Quarto> quartos = [];
+  final List<Quarto> quartos = [
+    Quarto(
+      numero: 101,
+      id: '1',
+      idConsultorio: 'C1',
+      lotacao: 2,
+      enfermeiraResponsavel: 'Carlos Pereira',
+    ),
+    Quarto(
+      numero: 102,
+      id: '2',
+      idConsultorio: 'C2',
+      lotacao: 1,
+      enfermeiraResponsavel: 'Carlos Pereira',
+    ),
+    Quarto(
+      numero: 103,
+      id: '3',
+      idConsultorio: 'C3',
+      lotacao: 3,
+      enfermeiraResponsavel: 'Carlos Pereira',
+    ),
+  ];
 
   void _showPacienteDialog(BuildContext context, {Paciente? paciente}) {
     final nomeController = TextEditingController(text: paciente?.nome ?? '');
     final cpfController = TextEditingController(text: paciente?.cpf ?? '');
     final restricoesController =
         TextEditingController(text: paciente?.restricoes ?? '');
+    int? selectedQuartoId = paciente?.idQuarto;
 
     showDialog(
       context: context,
@@ -91,6 +114,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 controller: restricoesController,
                 decoration: InputDecoration(labelText: 'Restrições'),
               ),
+              DropdownButton<int>(
+                value: selectedQuartoId,
+                onChanged: (int? newValue) {
+                  setState(() {
+                    selectedQuartoId = newValue;
+                  });
+                },
+                items: quartos.map<DropdownMenuItem<int>>((Quarto quarto) {
+                  return DropdownMenuItem<int>(
+                    value:
+                        int.tryParse(quarto.id), // Converte o id para inteiro
+                    child: Text('Quarto ${quarto.numero}'),
+                  );
+                }).toList(),
+                hint: Text('Selecione o Quarto'),
+              ),
             ],
           ),
           actions: [
@@ -102,7 +141,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                // Lógica para salvar ou editar paciente
+                setState(() {
+                  if (paciente == null) {
+                    final novoPaciente = Paciente(
+                      id: pacientes.length + 1,
+                      nome: nomeController.text,
+                      cpf: cpfController.text,
+                      restricoes: restricoesController.text,
+                      idSecretaria: 1,
+                      idQuarto: selectedQuartoId,
+                    );
+                    pacientes.add(novoPaciente);
+                  } else {
+                    paciente.nome = nomeController.text;
+                    paciente.cpf = cpfController.text;
+                    paciente.restricoes = restricoesController.text;
+                    paciente.idQuarto = selectedQuartoId;
+                  }
+                  _atualizarLotacaoQuartos();
+                });
                 Navigator.of(context).pop();
               },
               child: Text(paciente == null ? 'Cadastrar' : 'Salvar'),
@@ -111,6 +168,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
       },
     );
+  }
+
+  void _atualizarLotacaoQuartos() {
+    for (var quarto in quartos) {
+      quarto.lotacao =
+          pacientes.where((p) => p.idQuarto == int.tryParse(quarto.id)).length;
+    }
   }
 
   void _showFuncionarioDialog(BuildContext context,
@@ -425,6 +489,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _deletePaciente(int index) {
     setState(() {
       pacientes.removeAt(index);
+      _atualizarLotacaoQuartos();
     });
   }
 
