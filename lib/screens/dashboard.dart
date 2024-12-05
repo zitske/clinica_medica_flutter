@@ -1,3 +1,4 @@
+import 'package:clinica_medica_flutter/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
@@ -6,6 +7,7 @@ import '../classes/funcionario.dart';
 import '../classes/consulta.dart';
 import '../classes/receita.dart';
 import '../classes/quarto.dart';
+import 'package:clinica_medica_flutter/api/calls.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -85,6 +87,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
       enfermeiraResponsavel: 'Carlos Pereira',
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    getEmpregados();
+  }
 
   void _showPacienteDialog(BuildContext context, {Paciente? paciente}) {
     final nomeController = TextEditingController(text: paciente?.nome ?? '');
@@ -517,6 +525,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         elevation: 10,
         centerTitle: false,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout_outlined),
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+              );
+            },
+          ),
+          SizedBox(
+            width: 10,
+          )
+        ],
         title: Text(
           'The Simple Clinic | Dashboard',
           style: GoogleFonts.anekOdia(

@@ -8,4 +8,4 @@ Trabalho da disciplina de Ciência de Dados.
 
 ## Run
 
-To run this project use "flutter run -d chrome --web-browser-flag "--disable-web-security"
+To run this project use " flutter run -d chrome --web-browser-flag "--disable-web-security" "
