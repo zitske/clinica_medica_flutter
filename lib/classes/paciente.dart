@@ -14,4 +14,26 @@ class Paciente {
     required this.idSecretaria,
     this.idQuarto,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'ID': id,
+      'Nome': nome,
+      'Cpf': cpf,
+      'Restricoes': restricoes,
+      'idSecretaria': idSecretaria,
+      'quartosID': idQuarto,
+    };
+  }
+
+  factory Paciente.fromJson(Map<String, dynamic> json) {
+    return Paciente(
+      id: json['ID'],
+      nome: json['Nome'],
+      cpf: json['Cpf'],
+      restricoes: json['Restricoes'],
+      idSecretaria: json['idSecretaria'],
+      idQuarto: json['quartosID'],
+    );
+  }
 }

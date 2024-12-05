@@ -12,4 +12,24 @@ class Quarto {
     required this.lotacao,
     required this.enfermeiraResponsavel,
   });
+
+  factory Quarto.fromJson(Map<String, dynamic> json) {
+    return Quarto(
+      numero: json['numero'],
+      id: json['id'],
+      idConsultorio: json['idConsultorio'],
+      lotacao: json['lotacao'],
+      enfermeiraResponsavel: json['enfermeiraResponsavel'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'numero': numero,
+      'id': id,
+      'idConsultorio': idConsultorio,
+      'lotacao': lotacao,
+      'enfermeiraResponsavel': enfermeiraResponsavel,
+    };
+  }
 }
