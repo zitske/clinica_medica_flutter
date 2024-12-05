@@ -15,11 +15,11 @@ class Consultorio {
 
   factory Consultorio.fromJson(Map<String, dynamic> json) {
     return Consultorio(
-      email: json['email'],
-      senha: json['senha'],
-      nome: json['nome'],
-      cnpj: json['cnpj'],
-      id: json['id'],
+      email: json['email'] ?? '',
+      senha: json['senha'] ?? '',
+      nome: json['nome'] ?? '',
+      cnpj: json['cnpj'] ?? '',
+      id: json['id'] ?? '',
     );
   }
 

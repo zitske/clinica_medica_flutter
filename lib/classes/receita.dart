@@ -6,8 +6,8 @@ class Receita {
 
   factory Receita.fromJson(Map<String, dynamic> json) {
     return Receita(
-      medicamento: json['medicamento'],
-      consultaId: json['consultaId'],
+      medicamento: json['medicamento'] ?? '',
+      consultaId: json['consultaId'] ?? 0,
     );
   }
 

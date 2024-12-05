@@ -37,7 +37,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       nome: 'Carlos Pereira',
       coren: 'COREN12345',
     ),
-    Funcionario.medico(
+    Funcionario.medica(
       id: 2,
       cpf: '555.666.777-88',
       nome: 'Ana Martins',
@@ -91,7 +91,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    getEmpregados();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final fetchedPacientes = await getPacientes();
+    final fetchedFuncionarios = await getEmpregados();
+    final fetchedConsultas = await getConsultas();
+    final fetchedReceitas = await getReceitas();
+    final fetchedQuartos = await getQuartos();
+
+    setState(() {
+      pacientes.clear();
+      pacientes.addAll(fetchedPacientes);
+
+      funcionarios.clear();
+      funcionarios.addAll(fetchedFuncionarios);
+
+      consultas.clear();
+      consultas.addAll(fetchedConsultas);
+
+      receitas.clear();
+      receitas.addAll(fetchedReceitas);
+
+      quartos.clear();
+      quartos.addAll(fetchedQuartos);
+    });
   }
 
   void _showPacienteDialog(BuildContext context, {Paciente? paciente}) {

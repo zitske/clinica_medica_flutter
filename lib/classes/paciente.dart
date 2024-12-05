@@ -28,11 +28,11 @@ class Paciente {
 
   factory Paciente.fromJson(Map<String, dynamic> json) {
     return Paciente(
-      id: json['ID'],
-      nome: json['Nome'],
-      cpf: json['Cpf'],
-      restricoes: json['Restricoes'],
-      idSecretaria: json['idSecretaria'],
+      id: json['ID'] ?? 0,
+      nome: json['Nome'] ?? '',
+      cpf: json['Cpf'] ?? '',
+      restricoes: json['Restricoes'] ?? '',
+      idSecretaria: json['idSecretaria'] ?? 0,
       idQuarto: json['quartosID'],
     );
   }

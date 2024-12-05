@@ -15,11 +15,11 @@ class Quarto {
 
   factory Quarto.fromJson(Map<String, dynamic> json) {
     return Quarto(
-      numero: json['numero'],
-      id: json['id'],
-      idConsultorio: json['idConsultorio'],
-      lotacao: json['lotacao'],
-      enfermeiraResponsavel: json['enfermeiraResponsavel'],
+      numero: json['numero'] ?? 0,
+      id: json['id'] ?? '',
+      idConsultorio: json['idConsultorio'] ?? '',
+      lotacao: json['lotacao'] ?? 0,
+      enfermeiraResponsavel: json['enfermeiraResponsavel'] ?? '',
     );
   }
 

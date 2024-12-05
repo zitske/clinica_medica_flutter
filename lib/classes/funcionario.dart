@@ -18,7 +18,7 @@ class Funcionario {
         crm = null,
         idConsultorio = null;
 
-  Funcionario.medico({
+  Funcionario.medica({
     required this.id,
     required this.cpf,
     required this.nome,
@@ -40,26 +40,26 @@ class Funcionario {
 
   factory Funcionario.fromJson(Map<String, dynamic> json) {
     switch (json['tipo']) {
-      case 'Enfermeiro':
+      case 'enfermeira':
         return Funcionario.enfermeiro(
-          id: json['id'],
-          cpf: json['cpf'],
-          nome: json['nome'],
-          coren: json['coren'],
+          id: json['id'] ?? 0,
+          cpf: json['cpf'] ?? '',
+          nome: json['nome'] ?? '',
+          coren: json['coren'] ?? '',
         );
-      case 'Medico':
-        return Funcionario.medico(
-          id: json['id'],
-          cpf: json['cpf'],
-          nome: json['nome'],
-          especialidade: json['especialidade'],
-          crm: json['crm'],
+      case 'medica':
+        return Funcionario.medica(
+          id: json['id'] ?? 0,
+          cpf: json['cpf'] ?? '',
+          nome: json['nome'] ?? '',
+          especialidade: json['especialidade'] ?? '',
+          crm: json['crm'] ?? '',
         );
-      case 'Secretario':
+      case 'secretaria':
         return Funcionario.secretario(
-          id: json['id'],
-          cpf: json['cpf'],
-          nome: json['nome'],
+          id: json['id'] ?? 0,
+          cpf: json['cpf'] ?? '',
+          nome: json['nome'] ?? '',
         );
       default:
         throw Exception('Tipo de funcionário desconhecido');
