@@ -84,6 +84,27 @@ Future<void> inserirPaciente(Paciente paciente) async {
   }
 }
 
+Future<void> inserirPacienteComDetalhes(List<dynamic> paciente) async {
+  try {
+    var response = await http.post(
+      url.replace(path: '/inserir_paciente'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "ID": paciente[0],
+        "Nome": paciente[1],
+        "Cpf": paciente[2],
+        "Restricoes": paciente[3],
+        "quartosID": paciente[4]
+      }),
+    );
+    print(
+        'Endpoint /inserir_paciente - Response body: ${response.body}'); // Debug print
+    print(response.body);
+  } catch (e) {
+    print('Erro ao inserir paciente: $e');
+  }
+}
+
 Future<List<Paciente>> getPacientes() async {
   try {
     var response = await http.get(url.replace(path: '/pacientes'));

@@ -173,7 +173,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Text('Cancelar'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 setState(() {
                   if (paciente == null) {
                     final novoPaciente = Paciente(
@@ -185,6 +185,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       idQuarto: selectedQuartoId,
                     );
                     pacientes.add(novoPaciente);
+                    inserirPaciente(
+                        novoPaciente); // Chamada para inserir no banco de dados
                   } else {
                     paciente.nome = nomeController.text;
                     paciente.cpf = cpfController.text;
