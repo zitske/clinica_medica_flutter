@@ -160,3 +160,55 @@ Future<List<Quarto>> getQuartos() async {
     return [];
   }
 }
+
+Future<void> inserirConsultorio(Consultorio consultorio) async {
+  try {
+    var response = await http.post(
+      url.replace(path: '/inserir_consultorio'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(consultorio.toJson()),
+    );
+    print('Endpoint /inserir_consultorio - Response body: ${response.body}');
+  } catch (e) {
+    print('Erro ao inserir consultório: $e');
+  }
+}
+
+Future<void> inserirConsulta(Consulta consulta) async {
+  try {
+    var response = await http.post(
+      url.replace(path: '/inserir_consulta'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(consulta.toJson()),
+    );
+    print('Endpoint /inserir_consulta - Response body: ${response.body}');
+  } catch (e) {
+    print('Erro ao inserir consulta: $e');
+  }
+}
+
+Future<void> inserirQuarto(Quarto quarto) async {
+  try {
+    var response = await http.post(
+      url.replace(path: '/inserir_quarto'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(quarto.toJson()),
+    );
+    print('Endpoint /inserir_quarto - Response body: ${response.body}');
+  } catch (e) {
+    print('Erro ao inserir quarto: $e');
+  }
+}
+
+Future<void> inserirFuncionario(Funcionario funcionario) async {
+  try {
+    var response = await http.post(
+      url.replace(path: '/inserir_funcionario'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(funcionario.toJson()),
+    );
+    print('Endpoint /inserir_funcionario - Response body: ${response.body}');
+  } catch (e) {
+    print('Erro ao inserir funcionário: $e');
+  }
+}

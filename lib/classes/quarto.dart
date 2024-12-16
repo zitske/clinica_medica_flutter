@@ -17,7 +17,7 @@ class Quarto {
     return Quarto(
       numero: json['numero'] ?? 0,
       id: json['id'] ?? 0,
-      idConsultorio: json['idConsultorio'] ?? "",
+      idConsultorio: json['idConsultorio']?.toString() ?? "",
       lotacao: json['lotacao'] ?? 0,
       enfermeiraResponsavel: json['enfermeiraResponsavel'] ?? '',
     );

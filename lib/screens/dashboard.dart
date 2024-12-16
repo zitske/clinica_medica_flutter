@@ -15,78 +15,13 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final List<Paciente> pacientes = [
-    Paciente(
-        id: 1,
-        nome: 'João Silva',
-        cpf: '123.456.789-00',
-        restricoes: 'Nenhuma',
-        idSecretaria: 1),
-    Paciente(
-        id: 2,
-        nome: 'Maria Souza',
-        cpf: '987.654.321-00',
-        restricoes: 'Alergia a penicilina',
-        idSecretaria: 2),
-  ];
+  final List<Paciente> pacientes = [];
 
-  final List<Funcionario> funcionarios = [
-    Funcionario.enfermeiro(
-      id: 1,
-      cpf: '111.222.333-44',
-      nome: 'Carlos Pereira',
-      coren: 'COREN12345',
-    ),
-    Funcionario.medica(
-      id: 2,
-      cpf: '555.666.777-88',
-      nome: 'Ana Martins',
-      especialidade: 'Cardiologia',
-      crm: 'CRM67890',
-    ),
-    Funcionario.secretario(
-      id: 3,
-      cpf: '999.000.111-22',
-      nome: 'Fernanda Lima',
-    ),
-  ];
+  final List<Funcionario> funcionarios = [];
 
-  final List<Consulta> consultas = [
-    Consulta(
-      idPaciente: 1,
-      idMedico: 2,
-      data: DateTime.parse('2023-10-01'),
-    ),
-    Consulta(
-      idPaciente: 2,
-      idMedico: 2,
-      data: DateTime.parse('2023-10-02'),
-    ),
-  ];
+  final List<Consulta> consultas = [];
   final List<Receita> receitas = [];
-  final List<Quarto> quartos = [
-    Quarto(
-      numero: 101,
-      id: 1,
-      idConsultorio: "1",
-      lotacao: 2,
-      enfermeiraResponsavel: 'Carlos Pereira',
-    ),
-    Quarto(
-      numero: 102,
-      id: 2,
-      idConsultorio: "1",
-      lotacao: 1,
-      enfermeiraResponsavel: 'Carlos Pereira',
-    ),
-    Quarto(
-      numero: 103,
-      id: 3,
-      idConsultorio: "1",
-      lotacao: 3,
-      enfermeiraResponsavel: 'Carlos Pereira',
-    ),
-  ];
+  final List<Quarto> quartos = [];
 
   @override
   void initState() {
@@ -200,6 +135,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       }
                       _atualizarLotacaoQuartos();
                     });
+                    await _fetchData(); // Atualiza a tela e as listas
                     Navigator.of(context).pop();
                   },
                   child: Text(paciente == null ? 'Cadastrar' : 'Salvar'),
@@ -291,8 +227,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Text('Cancelar'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // Lógica para salvar ou editar funcionário
+                    await _fetchData(); // Atualiza a tela e as listas
                     Navigator.of(context).pop();
                   },
                   child: Text(funcionario == null ? 'Cadastrar' : 'Salvar'),
@@ -412,7 +349,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Text('Cancelar'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // Lógica para salvar ou editar consulta e receita
                     if (consulta == null) {
                       final novaConsulta = Consulta(
@@ -430,6 +367,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     } else {
                       // Atualizar consulta existente
                     }
+                    await _fetchData(); // Atualiza a tela e as listas
                     Navigator.of(context).pop();
                   },
                   child: Text(consulta == null ? 'Cadastrar' : 'Salvar'),
@@ -505,7 +443,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Text('Cancelar'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // Lógica para salvar ou editar quarto
                     setState(() {
                       if (quarto == null) {
@@ -522,6 +460,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         quarto.enfermeiraResponsavel = enfermeiraResponsavel!;
                       }
                     });
+                    await _fetchData(); // Atualiza a tela e as listas
                     Navigator.of(context).pop();
                   },
                   child: Text(quarto == null ? 'Cadastrar' : 'Salvar'),
