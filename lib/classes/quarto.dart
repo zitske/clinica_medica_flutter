@@ -1,7 +1,7 @@
 class Quarto {
   int numero;
   int id;
-  int idConsultorio;
+  String idConsultorio;
   int lotacao;
   String enfermeiraResponsavel;
 
@@ -17,7 +17,7 @@ class Quarto {
     return Quarto(
       numero: json['numero'] ?? 0,
       id: json['id'] ?? 0,
-      idConsultorio: json['idConsultorio'] ?? 0,
+      idConsultorio: json['idConsultorio'] ?? "",
       lotacao: json['lotacao'] ?? 0,
       enfermeiraResponsavel: json['enfermeiraResponsavel'] ?? '',
     );
