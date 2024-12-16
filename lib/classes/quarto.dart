@@ -1,7 +1,7 @@
 class Quarto {
   int numero;
-  String id;
-  String idConsultorio;
+  int id;
+  int idConsultorio;
   int lotacao;
   String enfermeiraResponsavel;
 
@@ -16,8 +16,8 @@ class Quarto {
   factory Quarto.fromJson(Map<String, dynamic> json) {
     return Quarto(
       numero: json['numero'] ?? 0,
-      id: json['id'] ?? '',
-      idConsultorio: json['idConsultorio'] ?? '',
+      id: json['id'] ?? 0,
+      idConsultorio: json['idConsultorio'] ?? 0,
       lotacao: json['lotacao'] ?? 0,
       enfermeiraResponsavel: json['enfermeiraResponsavel'] ?? '',
     );

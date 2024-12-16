@@ -67,22 +67,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final List<Quarto> quartos = [
     Quarto(
       numero: 101,
-      id: '1',
-      idConsultorio: 'C1',
+      id: 1,
+      idConsultorio: 1,
       lotacao: 2,
       enfermeiraResponsavel: 'Carlos Pereira',
     ),
     Quarto(
       numero: 102,
-      id: '2',
-      idConsultorio: 'C2',
+      id: 2,
+      idConsultorio: 1,
       lotacao: 1,
       enfermeiraResponsavel: 'Carlos Pereira',
     ),
     Quarto(
       numero: 103,
-      id: '3',
-      idConsultorio: 'C3',
+      id: 3,
+      idConsultorio: 1,
       lotacao: 3,
       enfermeiraResponsavel: 'Carlos Pereira',
     ),
@@ -129,77 +129,84 @@ class _DashboardScreenState extends State<DashboardScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text(
-              paciente == null ? 'Cadastrar Novo Paciente' : 'Editar Paciente'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nomeController,
-                decoration: InputDecoration(labelText: 'Nome'),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(paciente == null
+                  ? 'Cadastrar Novo Paciente'
+                  : 'Editar Paciente'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: nomeController,
+                      decoration: InputDecoration(labelText: 'Nome'),
+                    ),
+                    TextField(
+                      controller: cpfController,
+                      decoration: InputDecoration(labelText: 'CPF'),
+                    ),
+                    TextField(
+                      controller: restricoesController,
+                      decoration: InputDecoration(labelText: 'Restrições'),
+                    ),
+                    DropdownButton<int>(
+                      value: selectedQuartoId,
+                      onChanged: (int? newValue) {
+                        setState(() {
+                          selectedQuartoId = newValue;
+                        });
+                      },
+                      items:
+                          quartos.map<DropdownMenuItem<int>>((Quarto quarto) {
+                        return DropdownMenuItem<int>(
+                          value: quarto.id, // Converte o id para inteiro
+                          child: Text('Quarto ${quarto.numero}'),
+                        );
+                      }).toList(),
+                      hint: Text('Selecione o Quarto'),
+                    ),
+                  ],
+                ),
               ),
-              TextField(
-                controller: cpfController,
-                decoration: InputDecoration(labelText: 'CPF'),
-              ),
-              TextField(
-                controller: restricoesController,
-                decoration: InputDecoration(labelText: 'Restrições'),
-              ),
-              DropdownButton<int>(
-                value: selectedQuartoId,
-                onChanged: (int? newValue) {
-                  setState(() {
-                    selectedQuartoId = newValue;
-                  });
-                },
-                items: quartos.map<DropdownMenuItem<int>>((Quarto quarto) {
-                  return DropdownMenuItem<int>(
-                    value:
-                        int.tryParse(quarto.id), // Converte o id para inteiro
-                    child: Text('Quarto ${quarto.numero}'),
-                  );
-                }).toList(),
-                hint: Text('Selecione o Quarto'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                setState(() {
-                  if (paciente == null) {
-                    final novoPaciente = Paciente(
-                      id: pacientes.length + 1,
-                      nome: nomeController.text,
-                      cpf: cpfController.text,
-                      restricoes: restricoesController.text,
-                      idSecretaria: 1,
-                      idQuarto: selectedQuartoId,
-                    );
-                    pacientes.add(novoPaciente);
-                    inserirPaciente(
-                        novoPaciente); // Chamada para inserir no banco de dados
-                  } else {
-                    paciente.nome = nomeController.text;
-                    paciente.cpf = cpfController.text;
-                    paciente.restricoes = restricoesController.text;
-                    paciente.idQuarto = selectedQuartoId;
-                  }
-                  _atualizarLotacaoQuartos();
-                });
-                Navigator.of(context).pop();
-              },
-              child: Text(paciente == null ? 'Cadastrar' : 'Salvar'),
-            ),
-          ],
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    setState(() {
+                      if (paciente == null) {
+                        final novoPaciente = Paciente(
+                          id: pacientes.length + 1,
+                          nome: nomeController.text,
+                          cpf: cpfController.text,
+                          restricoes: restricoesController.text,
+                          idSecretaria: 1,
+                          idQuarto: selectedQuartoId,
+                        );
+                        pacientes.add(novoPaciente);
+                        inserirPaciente(
+                            novoPaciente); // Chamada para inserir no banco de dados
+                      } else {
+                        paciente.nome = nomeController.text;
+                        paciente.cpf = cpfController.text;
+                        paciente.restricoes = restricoesController.text;
+                        paciente.idQuarto = selectedQuartoId;
+                      }
+                      _atualizarLotacaoQuartos();
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(paciente == null ? 'Cadastrar' : 'Salvar'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -207,8 +214,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void _atualizarLotacaoQuartos() {
     for (var quarto in quartos) {
-      quarto.lotacao =
-          pacientes.where((p) => p.idQuarto == int.tryParse(quarto.id)).length;
+      quarto.lotacao = pacientes.where((p) => p.idQuarto == quarto.id).length;
     }
   }
 
@@ -232,48 +238,50 @@ class _DashboardScreenState extends State<DashboardScreen> {
               title: Text(funcionario == null
                   ? 'Cadastrar Novo Funcionário'
                   : 'Editar Funcionário'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: nomeController,
-                    decoration: InputDecoration(labelText: 'Nome'),
-                  ),
-                  TextField(
-                    controller: cpfController,
-                    decoration: InputDecoration(labelText: 'CPF'),
-                  ),
-                  DropdownButton<String>(
-                    value: tipo,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        tipo = newValue!;
-                      });
-                    },
-                    items: <String>['Secretario', 'Medico', 'Enfermeiro']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                  if (tipo == 'Enfermeiro')
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     TextField(
-                      controller: corenController,
-                      decoration: InputDecoration(labelText: 'COREN'),
+                      controller: nomeController,
+                      decoration: InputDecoration(labelText: 'Nome'),
                     ),
-                  if (tipo == 'Medico')
                     TextField(
-                      controller: especialidadeController,
-                      decoration: InputDecoration(labelText: 'Especialidade'),
+                      controller: cpfController,
+                      decoration: InputDecoration(labelText: 'CPF'),
                     ),
-                  if (tipo == 'Medico')
-                    TextField(
-                      controller: crmController,
-                      decoration: InputDecoration(labelText: 'CRM'),
+                    DropdownButton<String>(
+                      value: tipo,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          tipo = newValue!;
+                        });
+                      },
+                      items: <String>['Secretario', 'Medico', 'Enfermeiro']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
                     ),
-                ],
+                    if (tipo == 'Enfermeiro')
+                      TextField(
+                        controller: corenController,
+                        decoration: InputDecoration(labelText: 'COREN'),
+                      ),
+                    if (tipo == 'Medico')
+                      TextField(
+                        controller: especialidadeController,
+                        decoration: InputDecoration(labelText: 'Especialidade'),
+                      ),
+                    if (tipo == 'Medico')
+                      TextField(
+                        controller: crmController,
+                        decoration: InputDecoration(labelText: 'CRM'),
+                      ),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -340,59 +348,61 @@ class _DashboardScreenState extends State<DashboardScreen> {
               title: Text(consulta == null
                   ? 'Cadastrar Nova Consulta'
                   : 'Editar Consulta'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DropdownButton<int>(
-                    value: selectedPacienteId,
-                    onChanged: (int? newValue) {
-                      setState(() {
-                        selectedPacienteId = newValue;
-                      });
-                    },
-                    items: pacientes
-                        .map<DropdownMenuItem<int>>((Paciente paciente) {
-                      return DropdownMenuItem<int>(
-                        value: paciente.id,
-                        child: Text(paciente.nome),
-                      );
-                    }).toList(),
-                    hint: Text('Selecione o Paciente'),
-                  ),
-                  DropdownButton<int>(
-                    value: selectedMedicoId,
-                    onChanged: (int? newValue) {
-                      setState(() {
-                        selectedMedicoId = newValue;
-                      });
-                    },
-                    items: funcionarios
-                        .where((funcionario) => funcionario.tipo == 'Medico')
-                        .map<DropdownMenuItem<int>>((Funcionario medico) {
-                      return DropdownMenuItem<int>(
-                        value: medico.id,
-                        child: Text(medico.nome),
-                      );
-                    }).toList(),
-                    hint: Text('Selecione o Médico'),
-                  ),
-                  TextField(
-                    controller: dataController,
-                    decoration: InputDecoration(
-                      labelText: 'Data e Hora',
-                      suffixIcon: IconButton(
-                        icon: Icon(Icons.calendar_today),
-                        onPressed: () {
-                          _selectDateTime(context);
-                        },
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DropdownButton<int>(
+                      value: selectedPacienteId,
+                      onChanged: (int? newValue) {
+                        setState(() {
+                          selectedPacienteId = newValue;
+                        });
+                      },
+                      items: pacientes
+                          .map<DropdownMenuItem<int>>((Paciente paciente) {
+                        return DropdownMenuItem<int>(
+                          value: paciente.id,
+                          child: Text(paciente.nome),
+                        );
+                      }).toList(),
+                      hint: Text('Selecione o Paciente'),
+                    ),
+                    DropdownButton<int>(
+                      value: selectedMedicoId,
+                      onChanged: (int? newValue) {
+                        setState(() {
+                          selectedMedicoId = newValue;
+                        });
+                      },
+                      items: funcionarios
+                          .where((funcionario) => funcionario.tipo == 'Medico')
+                          .map<DropdownMenuItem<int>>((Funcionario medico) {
+                        return DropdownMenuItem<int>(
+                          value: medico.id,
+                          child: Text(medico.nome),
+                        );
+                      }).toList(),
+                      hint: Text('Selecione o Médico'),
+                    ),
+                    TextField(
+                      controller: dataController,
+                      decoration: InputDecoration(
+                        labelText: 'Data e Hora',
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.calendar_today),
+                          onPressed: () {
+                            _selectDateTime(context);
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  TextField(
-                    controller: medicamentoController,
-                    decoration: InputDecoration(labelText: 'Medicamento'),
-                  ),
-                ],
+                    TextField(
+                      controller: medicamentoController,
+                      decoration: InputDecoration(labelText: 'Medicamento'),
+                    ),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -435,9 +445,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _showQuartoDialog(BuildContext context, {Quarto? quarto}) {
     final numeroController =
         TextEditingController(text: quarto?.numero.toString() ?? '');
-    final idController = TextEditingController(text: quarto?.id ?? '');
-    final idConsultorioController =
-        TextEditingController(text: quarto?.idConsultorio ?? '');
+    final idController =
+        TextEditingController(text: quarto?.id.toString() ?? 0.toString());
+    final idConsultorioController = TextEditingController(
+        text: quarto?.idConsultorio.toString() ?? 0.toString());
     final lotacaoController =
         TextEditingController(text: quarto?.lotacao.toString() ?? '0');
     String? enfermeiraResponsavel = quarto?.enfermeiraResponsavel;
@@ -450,39 +461,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
             return AlertDialog(
               title: Text(
                   quarto == null ? 'Cadastrar Novo Quarto' : 'Editar Quarto'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: numeroController,
-                    decoration: InputDecoration(labelText: 'Número'),
-                    keyboardType: TextInputType.number,
-                  ),
-                  TextField(
-                    controller: idConsultorioController,
-                    decoration: InputDecoration(labelText: 'ID Consultório'),
-                    enabled: false,
-                  ),
-                  DropdownButton<String>(
-                    value: enfermeiraResponsavel,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        enfermeiraResponsavel = newValue;
-                      });
-                    },
-                    items: funcionarios
-                        .where(
-                            (funcionario) => funcionario.tipo == 'Enfermeiro')
-                        .map<DropdownMenuItem<String>>(
-                            (Funcionario enfermeiro) {
-                      return DropdownMenuItem<String>(
-                        value: enfermeiro.nome,
-                        child: Text(enfermeiro.nome),
-                      );
-                    }).toList(),
-                    hint: Text('Selecione a Enfermeira Responsável'),
-                  ),
-                ],
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: numeroController,
+                      decoration: InputDecoration(labelText: 'Número'),
+                      keyboardType: TextInputType.number,
+                    ),
+                    TextField(
+                      controller: idConsultorioController,
+                      decoration: InputDecoration(labelText: 'ID Consultório'),
+                      enabled: false,
+                    ),
+                    DropdownButton<String>(
+                      value: enfermeiraResponsavel,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          enfermeiraResponsavel = newValue;
+                        });
+                      },
+                      items: funcionarios
+                          .where(
+                              (funcionario) => funcionario.tipo == 'Enfermeiro')
+                          .map<DropdownMenuItem<String>>(
+                              (Funcionario enfermeiro) {
+                        return DropdownMenuItem<String>(
+                          value: enfermeiro.nome,
+                          child: Text(enfermeiro.nome),
+                        );
+                      }).toList(),
+                      hint: Text('Selecione a Enfermeira Responsável'),
+                    ),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -498,9 +511,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       if (quarto == null) {
                         quartos.add(Quarto(
                           numero: int.parse(numeroController.text),
-                          id: Random().nextInt(100000).toString(),
-                          idConsultorio:
-                              'ID_DO_CONSULTORIO', // Defina o ID do consultório aqui
+                          id: Random().nextInt(100000),
+                          idConsultorio: 10, // Defina o ID do consultório aqui
                           lotacao: 0,
                           enfermeiraResponsavel: enfermeiraResponsavel!,
                         ));
@@ -579,303 +591,308 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          child: GridView.count(
-            crossAxisCount: MediaQuery.of(context).size.width > 600 ? 2 : 1,
-            crossAxisSpacing: 16.0,
-            mainAxisSpacing: 16.0,
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            children: <Widget>[
-              Card(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                elevation: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
+            children: [
+              GridView.count(
+                crossAxisCount: MediaQuery.of(context).size.width > 600 ? 2 : 1,
+                crossAxisSpacing: 16.0,
+                mainAxisSpacing: 16.0,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                children: <Widget>[
+                  Card(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    elevation: 5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'Pacientes',
-                            style: GoogleFonts.anekOdia(
-                                fontSize: 24.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Pacientes',
+                                style: GoogleFonts.anekOdia(
+                                    fontSize: 24.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.add),
+                                onPressed: () {
+                                  _showPacienteDialog(context);
+                                },
+                              ),
+                            ],
                           ),
-                          IconButton(
-                            icon: Icon(Icons.add),
-                            onPressed: () {
-                              _showPacienteDialog(context);
-                            },
+                          Column(
+                            children: pacientes.map((paciente) {
+                              return Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                elevation: 5,
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 16.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ListTile(
+                                    title: Text(paciente.nome),
+                                    subtitle: Text(
+                                        'CPF: ${paciente.cpf}\nRestrições: ${paciente.restricoes}'),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.edit),
+                                          onPressed: () {
+                                            _showPacienteDialog(context,
+                                                paciente: paciente);
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.delete),
+                                          onPressed: () {
+                                            _deletePaciente(
+                                                pacientes.indexOf(paciente));
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ],
                       ),
-                      Column(
-                        children: pacientes.map((paciente) {
-                          return Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            elevation: 5,
-                            margin: EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ListTile(
-                                title: Text(paciente.nome),
-                                subtitle: Text(
-                                    'CPF: ${paciente.cpf}\nRestrições: ${paciente.restricoes}'),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.edit),
-                                      onPressed: () {
-                                        _showPacienteDialog(context,
-                                            paciente: paciente);
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.delete),
-                                      onPressed: () {
-                                        _deletePaciente(
-                                            pacientes.indexOf(paciente));
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-              Card(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                elevation: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Card(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    elevation: 5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'Funcionários',
-                            style: GoogleFonts.anekOdia(
-                                fontSize: 24.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Funcionários',
+                                style: GoogleFonts.anekOdia(
+                                    fontSize: 24.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.add),
+                                onPressed: () {
+                                  _showFuncionarioDialog(context);
+                                },
+                              ),
+                            ],
                           ),
-                          IconButton(
-                            icon: Icon(Icons.add),
-                            onPressed: () {
-                              _showFuncionarioDialog(context);
-                            },
+                          Column(
+                            children: funcionarios.map((funcionario) {
+                              return Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                elevation: 5,
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 16.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ListTile(
+                                    title: Text(funcionario.nome),
+                                    subtitle: Text(
+                                        'CPF: ${funcionario.cpf}\nTipo: ${funcionario.tipo}\nCOREN: ${funcionario.coren}\nEspecialidade: ${funcionario.especialidade}\nCRM: ${funcionario.crm}\nID Consultório: ${funcionario.idConsultorio}'),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.edit),
+                                          onPressed: () {
+                                            _showFuncionarioDialog(context,
+                                                funcionario: funcionario);
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.delete),
+                                          onPressed: () {
+                                            _deleteFuncionario(funcionarios
+                                                .indexOf(funcionario));
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ],
                       ),
-                      Column(
-                        children: funcionarios.map((funcionario) {
-                          return Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            elevation: 5,
-                            margin: EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ListTile(
-                                title: Text(funcionario.nome),
-                                subtitle: Text(
-                                    'CPF: ${funcionario.cpf}\nTipo: ${funcionario.tipo}\nCOREN: ${funcionario.coren}\nEspecialidade: ${funcionario.especialidade}\nCRM: ${funcionario.crm}\nID Consultório: ${funcionario.idConsultorio}'),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.edit),
-                                      onPressed: () {
-                                        _showFuncionarioDialog(context,
-                                            funcionario: funcionario);
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.delete),
-                                      onPressed: () {
-                                        _deleteFuncionario(
-                                            funcionarios.indexOf(funcionario));
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-              Card(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                elevation: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Card(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    elevation: 5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'Consultas',
-                            style: GoogleFonts.anekOdia(
-                                fontSize: 24.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Consultas',
+                                style: GoogleFonts.anekOdia(
+                                    fontSize: 24.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.add),
+                                onPressed: () {
+                                  _showConsultaDialog(context);
+                                },
+                              ),
+                            ],
                           ),
-                          IconButton(
-                            icon: Icon(Icons.add),
-                            onPressed: () {
-                              _showConsultaDialog(context);
-                            },
+                          Column(
+                            children: consultas.map((consulta) {
+                              final paciente = pacientes.firstWhere(
+                                  (p) => p.id == consulta.idPaciente);
+                              final medico = funcionarios
+                                  .firstWhere((f) => f.id == consulta.idMedico);
+                              return Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                elevation: 5,
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 16.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ListTile(
+                                    title: Text(
+                                        'Consulta de ${paciente.nome} com Dr(a). ${medico.nome}'),
+                                    subtitle: Text('Data: ${consulta.data}'),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.edit),
+                                          onPressed: () {
+                                            _showConsultaDialog(context,
+                                                consulta: consulta);
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.delete),
+                                          onPressed: () {
+                                            _deleteConsulta(
+                                                consultas.indexOf(consulta));
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ],
                       ),
-                      Column(
-                        children: consultas.map((consulta) {
-                          final paciente = pacientes
-                              .firstWhere((p) => p.id == consulta.idPaciente);
-                          final medico = funcionarios
-                              .firstWhere((f) => f.id == consulta.idMedico);
-                          return Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            elevation: 5,
-                            margin: EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ListTile(
-                                title: Text(
-                                    'Consulta de ${paciente.nome} com Dr(a). ${medico.nome}'),
-                                subtitle: Text('Data: ${consulta.data}'),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.edit),
-                                      onPressed: () {
-                                        _showConsultaDialog(context,
-                                            consulta: consulta);
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.delete),
-                                      onPressed: () {
-                                        _deleteConsulta(
-                                            consultas.indexOf(consulta));
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-              Card(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                elevation: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Card(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    elevation: 5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'Quartos',
-                            style: GoogleFonts.anekOdia(
-                                fontSize: 24.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Quartos',
+                                style: GoogleFonts.anekOdia(
+                                    fontSize: 24.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.add),
+                                onPressed: () {
+                                  _showQuartoDialog(context);
+                                },
+                              ),
+                            ],
                           ),
-                          IconButton(
-                            icon: Icon(Icons.add),
-                            onPressed: () {
-                              _showQuartoDialog(context);
-                            },
+                          Column(
+                            children: quartos.map((quarto) {
+                              return Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                elevation: 5,
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 16.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ListTile(
+                                    title: Text('Quarto ${quarto.numero}'),
+                                    subtitle: Text(
+                                        'ID: ${quarto.id}\nID Consultório: ${quarto.idConsultorio}\nLotação: ${quarto.lotacao}\nEnfermeira Responsável: ${quarto.enfermeiraResponsavel}'),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.edit),
+                                          onPressed: () {
+                                            _showQuartoDialog(context,
+                                                quarto: quarto);
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.delete),
+                                          onPressed: () {
+                                            _deleteQuarto(
+                                                quartos.indexOf(quarto));
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ],
                       ),
-                      Column(
-                        children: quartos.map((quarto) {
-                          return Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            elevation: 5,
-                            margin: EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ListTile(
-                                title: Text('Quarto ${quarto.numero}'),
-                                subtitle: Text(
-                                    'ID: ${quarto.id}\nID Consultório: ${quarto.idConsultorio}\nLotação: ${quarto.lotacao}\nEnfermeira Responsável: ${quarto.enfermeiraResponsavel}'),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.edit),
-                                      onPressed: () {
-                                        _showQuartoDialog(context,
-                                            quarto: quarto);
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.delete),
-                                      onPressed: () {
-                                        _deleteQuarto(quartos.indexOf(quarto));
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
