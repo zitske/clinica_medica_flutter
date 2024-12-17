@@ -15,13 +15,82 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final List<Paciente> pacientes = [];
+  final List<Paciente> pacientes = [
+    Paciente(
+      id: 1,
+      nome: 'João da Silva',
+      cpf: '123.456.789-00',
+      restricoes: 'Nenhuma',
+      idSecretaria: 1,
+      idQuarto: 1,
+    ),
+    Paciente(
+      id: 2,
+      nome: 'Maria Oliveira',
+      cpf: '987.654.321-00',
+      restricoes: 'Nenhuma',
+      idSecretaria: 1,
+      idQuarto: 2,
+    ),
+    Paciente(
+      id: 3,
+      nome: 'José Pereira',
+      cpf: '456.789.123-00',
+      restricoes: 'Nenhuma',
+      idSecretaria: 1,
+      idQuarto: 3,
+    ),
+  ];
 
-  final List<Funcionario> funcionarios = [];
+  final List<Funcionario> funcionarios = [
+    Funcionario.secretario(
+      id: 1,
+      cpf: '111.222.333-44',
+      nome: 'Carlos Souza',
+    ),
+  ];
 
-  final List<Consulta> consultas = [];
-  final List<Receita> receitas = [];
-  final List<Quarto> quartos = [];
+  final List<Consulta> consultas = [
+    Consulta(
+      idPaciente: 1,
+      idMedico: 1,
+      data: DateTime.now(),
+    ),
+    Consulta(
+      idPaciente: 2,
+      idMedico: 1,
+      data: DateTime.now(),
+    ),
+    Consulta(
+      idPaciente: 3,
+      idMedico: 1,
+      data: DateTime.now(),
+    ),
+  ];
+  //final List<Receita> receitas = [];
+  final List<Quarto> quartos = [
+    Quarto(
+      numero: 1,
+      id: 1,
+      idConsultorio: '1',
+      lotacao: 1,
+      enfermeiraResponsavel: 'Maria Oliveira',
+    ),
+    Quarto(
+      numero: 2,
+      id: 2,
+      idConsultorio: '1',
+      lotacao: 1,
+      enfermeiraResponsavel: 'Maria Oliveira',
+    ),
+    Quarto(
+      numero: 3,
+      id: 3,
+      idConsultorio: '1',
+      lotacao: 1,
+      enfermeiraResponsavel: 'Maria Oliveira',
+    ),
+  ];
 
   @override
   void initState() {
@@ -33,7 +102,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final fetchedPacientes = await getPacientes();
     final fetchedFuncionarios = await getEmpregados();
     final fetchedConsultas = await getConsultas();
-    final fetchedReceitas = await getReceitas();
+    //final fetchedReceitas = await getReceitas();
     final fetchedQuartos = await getQuartos();
 
     setState(() {
@@ -46,8 +115,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       consultas.clear();
       consultas.addAll(fetchedConsultas);
 
-      receitas.clear();
-      receitas.addAll(fetchedReceitas);
+      //receitas.clear();
+      //receitas.addAll(fetchedReceitas);
 
       quartos.clear();
       quartos.addAll(fetchedQuartos);
@@ -359,10 +428,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       );
                       setState(() {
                         consultas.add(novaConsulta);
-                        receitas.add(Receita(
+                        /*receitas.add(Receita(
                           medicamento: medicamentoController.text,
                           consultaId: novaConsulta.idPaciente,
-                        ));
+                        ));*/
                       });
                     } else {
                       // Atualizar consulta existente
@@ -768,9 +837,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     child: Wrap(
                                       children: consultas.map((consulta) {
                                         final paciente = pacientes.firstWhere(
-                                            (p) => p.id == consulta.idPaciente);
+                                          (p) => p.id == consulta.idPaciente,
+                                          orElse: () => Paciente(
+                                            id: 0,
+                                            nome: 'Desconhecido',
+                                            cpf: '',
+                                            restricoes: '',
+                                            idSecretaria: 0,
+                                            idQuarto: 0,
+                                          ),
+                                        );
                                         final medico = funcionarios.firstWhere(
-                                            (f) => f.id == consulta.idMedico);
+                                          (f) => f.id == consulta.idMedico,
+                                          orElse: () => Funcionario.secretario(
+                                              id: 0,
+                                              cpf: '',
+                                              nome: 'Desconhecido'),
+                                        );
+                                        if (paciente == null ||
+                                            medico == null) {
+                                          return SizedBox.shrink();
+                                        }
                                         return Card(
                                           shape: RoundedRectangleBorder(
                                             borderRadius:

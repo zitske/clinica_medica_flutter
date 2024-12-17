@@ -80,7 +80,7 @@ class LoginScreen extends StatelessWidget {
                       height: 45.0, // Altura igual à dos TextFields
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>

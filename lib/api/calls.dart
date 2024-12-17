@@ -12,8 +12,7 @@ var url = Uri.parse('http://localhost:5050/');
 Future<List<Receita>> getReceitas() async {
   try {
     var response = await http.get(url.replace(path: '/receitas'));
-    print(
-        'Endpoint /receitas - Response body: ${response.body}'); // Debug print
+    //print('Endpoint /receitas - Response body: ${response.body}'); // Debug print
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
       return data
@@ -32,8 +31,7 @@ Future<List<Receita>> getReceitas() async {
 Future<List<Consultorio>> getConsultorios() async {
   try {
     var response = await http.get(url.replace(path: '/consultorios'));
-    print(
-        'Endpoint /consultorios - Response body: ${response.body}'); // Debug print
+    //print('Endpoint /consultorios - Response body: ${response.body}'); // Debug print
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
       return data
@@ -52,8 +50,7 @@ Future<List<Consultorio>> getConsultorios() async {
 Future<List<Funcionario>> getEmpregados() async {
   try {
     var response = await http.get(url.replace(path: '/empregados'));
-    print(
-        'Endpoint /empregados - Response body: ${response.body}'); // Debug print
+    //print('Endpoint /empregados - Response body: ${response.body}'); // Debug print
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
       return data
@@ -76,9 +73,8 @@ Future<void> inserirPaciente(Paciente paciente) async {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(paciente.toJson()),
     );
-    print(
-        'Endpoint /inserir_paciente - Response body: ${response.body}'); // Debug print
-    print(response.body);
+    //print('Endpoint /inserir_paciente - Response body: ${response.body}'); // Debug print
+    //print(response.body);
   } catch (e) {
     print('Erro ao inserir paciente: $e');
   }
@@ -97,9 +93,8 @@ Future<void> inserirPacienteComDetalhes(List<dynamic> paciente) async {
         "quartosID": paciente[4]
       }),
     );
-    print(
-        'Endpoint /inserir_paciente - Response body: ${response.body}'); // Debug print
-    print(response.body);
+    //print('Endpoint /inserir_paciente - Response body: ${response.body}'); // Debug print
+    // print(response.body);
   } catch (e) {
     print('Erro ao inserir paciente: $e');
   }
@@ -108,8 +103,7 @@ Future<void> inserirPacienteComDetalhes(List<dynamic> paciente) async {
 Future<List<Paciente>> getPacientes() async {
   try {
     var response = await http.get(url.replace(path: '/pacientes'));
-    print(
-        'Endpoint /pacientes - Response body: ${response.body}'); // Debug print
+    //print('Endpoint /pacientes - Response body: ${response.body}'); // Debug print
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
       return data
@@ -128,8 +122,7 @@ Future<List<Paciente>> getPacientes() async {
 Future<List<Consulta>> getConsultas() async {
   try {
     var response = await http.get(url.replace(path: '/consultas'));
-    print(
-        'Endpoint /consultas - Response body: ${response.body}'); // Debug print
+    //print('Endpoint /consultas - Response body: ${response.body}'); // Debug print
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
       return data
@@ -148,7 +141,7 @@ Future<List<Consulta>> getConsultas() async {
 Future<List<Quarto>> getQuartos() async {
   try {
     var response = await http.get(url.replace(path: '/quartos'));
-    print('Endpoint /quartos - Response body: ${response.body}'); // Debug print
+    //print('Endpoint /quartos - Response body: ${response.body}'); // Debug print
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
       return data.map((json) => Quarto.fromJson(json)).toList().cast<Quarto>();
@@ -168,7 +161,7 @@ Future<void> inserirConsultorio(Consultorio consultorio) async {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(consultorio.toJson()),
     );
-    print('Endpoint /inserir_consultorio - Response body: ${response.body}');
+    //print('Endpoint /inserir_consultorio - Response body: ${response.body}');
   } catch (e) {
     print('Erro ao inserir consultório: $e');
   }
@@ -181,7 +174,7 @@ Future<void> inserirConsulta(Consulta consulta) async {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(consulta.toJson()),
     );
-    print('Endpoint /inserir_consulta - Response body: ${response.body}');
+    //print('Endpoint /inserir_consulta - Response body: ${response.body}');
   } catch (e) {
     print('Erro ao inserir consulta: $e');
   }
@@ -194,7 +187,7 @@ Future<void> inserirQuarto(Quarto quarto) async {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(quarto.toJson()),
     );
-    print('Endpoint /inserir_quarto - Response body: ${response.body}');
+    //print('Endpoint /inserir_quarto - Response body: ${response.body}');
   } catch (e) {
     print('Erro ao inserir quarto: $e');
   }
@@ -207,7 +200,7 @@ Future<void> inserirFuncionario(Funcionario funcionario) async {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(funcionario.toJson()),
     );
-    print('Endpoint /inserir_funcionario - Response body: ${response.body}');
+    //print('Endpoint /inserir_funcionario - Response body: ${response.body}');
   } catch (e) {
     print('Erro ao inserir funcionário: $e');
   }
