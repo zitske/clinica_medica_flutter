@@ -542,26 +542,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  void _deletePaciente(int index) {
+  void _deletePaciente(int index) async {
+    await deletarPaciente(pacientes[index].id);
+    print('Paciente deletado no índice: $index');
     setState(() {
       pacientes.removeAt(index);
       _atualizarLotacaoQuartos();
     });
   }
 
-  void _deleteFuncionario(int index) {
+  void _deleteFuncionario(int index) async {
+    await deletarFuncionario(funcionarios[index].id);
+    print('Funcionário deletado no índice: $index');
     setState(() {
       funcionarios.removeAt(index);
     });
   }
 
-  void _deleteConsulta(int index) {
+  void _deleteConsulta(int index) async {
+    await deletarConsulta(consultas[index]
+        .idPaciente); // Supondo que o id da consulta é o id do paciente
+    print('Consulta deletada no índice: $index');
     setState(() {
       consultas.removeAt(index);
     });
   }
 
-  void _deleteQuarto(int index) {
+  void _deleteQuarto(int index) async {
+    await deletarQuarto(quartos[index].id);
+    print('Quarto deletado no índice: $index');
     setState(() {
       quartos.removeAt(index);
     });

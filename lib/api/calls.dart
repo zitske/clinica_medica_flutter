@@ -205,3 +205,50 @@ Future<void> inserirFuncionario(Funcionario funcionario) async {
     print('Erro ao inserir funcionário: $e');
   }
 }
+
+Future<void> deletarPaciente(int id) async {
+  try {
+    var response =
+        await http.delete(url.replace(path: '/deletar_paciente/$id'));
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao deletar paciente: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Erro ao deletar paciente: $e');
+  }
+}
+
+Future<void> deletarFuncionario(int id) async {
+  try {
+    var response =
+        await http.delete(url.replace(path: '/deletar_empregado/$id'));
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao deletar funcionário: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Erro ao deletar funcionário: $e');
+  }
+}
+
+Future<void> deletarConsulta(int id) async {
+  try {
+    var response =
+        await http.delete(url.replace(path: '/deletar_consulta/$id'));
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao deletar consulta: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Erro ao deletar consulta: $e');
+  }
+}
+
+Future<void> deletarQuarto(int id) async {
+  try {
+    var response = await http.delete(url.replace(path: '/deletar_quarto/$id'));
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao deletar quarto: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Erro ao deletar quarto: $e');
+  }
+}
